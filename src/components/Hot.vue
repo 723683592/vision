@@ -1,9 +1,10 @@
 <template>
   <div class="com-container">
-    <div class="cat_name">{{catTitle}}</div>
     <div class="com-chart" ref="hot_ref"></div>
     <span class="iconfont icon-arrow-down"  @click='toLeft' :style="comStyle"></span>
     <span class="iconfont icon-arrow-up"  @click='toRight' :style="comStyle"></span>
+    <span class="iconfont icon-expand-alt" @click="$router.push('/hotpage')"></span>
+    <span class="cat_name" >{{catTitle}}</span>
   </div>
 </template>
 
@@ -52,9 +53,9 @@ export default {
       this.echartsInstance = this.$echarts.init(this.$refs.hot_ref, 'chalk')
       // 设置配置项
       const initOption = {
-        title: { text: '▎ 热销商品销售金额占比统计', left: 20, top: 20 },
+        title: { text: '▎ 热销商品销售金额占比统计', left: '4%', top: '4%' },
         legend: {
-          top: '8%'
+          top: '10%'
         },
         series: [
           {
@@ -65,10 +66,14 @@ export default {
       this.echartsInstance.setOption(initOption)
     },
     // 获取数据
-    getData (res) {
+    async getData (res) {
       // 从后台拿数据，解构赋值
       // const { data: res } = await this.$http.get('hot')
       this.allData = res
+      if (!res) {
+        const { data: ret } = await this.$http.get('hot')
+        this.allData = ret
+      }
       this.updateChart()
     },
     // 更新表格
@@ -97,6 +102,11 @@ export default {
     screenAdapter () {
       this.titleFontSize = this.$refs.hot_ref.offsetWidth / 100 * 3.6
       const adapterOption = {
+        title: {
+          textStyle: {
+            fontSize: this.titleFontSize
+          }
+        },
         series: {
           radius: this.titleFontSize * 4.5,
           center: ['50%', '60%'],
@@ -130,12 +140,20 @@ export default {
       this.updateChart()
     }
 
+  },
+  watch: {
+    $route: {
+      immediate: true, // 一旦监听到路由的变化立即执行
+      handler (to, from) {
+        this.getData()
+        // this.updateChart()
+      }
+    }
   }
 }
 </script>
 
 <style lang="less" scoped>
-
   .cat_name{ position: absolute;
                left: 80%;
                color:white;
@@ -160,4 +178,5 @@ export default {
      right:10%;
      cursor: pointer;
    }
+
 </style>

@@ -1,6 +1,7 @@
 <template>
   <div class="com-container">
     <div class="com-chart" ref="rank_ref"></div>
+    <span class="iconfont icon-expand-alt" @click="$router.push('/rankpage')"></span>
   </div>
 </template>
 
@@ -71,10 +72,14 @@ export default {
         this.startInterval()
       })
     },
-    getData (res) {
+    async getData (res) {
       // const { data: res } = await this.$http.get('rank')
       this.allData = res
       // 拿到数据之后降序排列
+      if (!res) {
+        const { data: ret } = await this.$http.get('rank')
+        this.allData = ret
+      }
       this.allData.sort((a, b) => b.value - a.value)
       this.startInterval()
       this.updateChart()
@@ -142,6 +147,15 @@ export default {
         }
         this.updateChart()
       }, 3000)
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true, // 一旦监听到路由的变化立即执行
+      handler (to, from) {
+        this.getData()
+        // this.updateChart()
+      }
     }
   }
 }

@@ -2,6 +2,7 @@
 <template>
  <div class="com-container">
      <div class="com-chart" ref="seller_ref"></div>
+      <span class="iconfont icon-expand-alt" @click="$router.push('/sellerpage')"></span>
  </div>
 </template>
 
@@ -112,9 +113,13 @@ export default {
       })
     },
     // 获取服务器数据
-    getData (res) {
+    async getData (res) {
       // const { data: res } = await this.$http.get('seller')
       this.allData = res
+      if (!res) {
+        const { data: ret } = await this.$http.get('seller')
+        this.allData = ret
+      }
       // 对数据进行排序 小-大
       this.allData.sort((a, b) => a.value - b.value)
       // console.log(this.allData)
@@ -129,20 +134,22 @@ export default {
     updatedChart () {
       const start = (this.currentPage - 1) * 5
       const end = this.currentPage * 5
-      const showData = this.allData.slice(start, end)
-      const names = showData.map((item) => item.name)
-      const values = showData.map((item) => item.value)
-      const dataoption = {
-        yAxis: {
-          data: names
-        },
-        series: [
-          {
-            data: values
-          }
-        ]
+      if (this.allData) {
+        const showData = this.allData.slice(start, end)
+        const names = showData.map((item) => item.name)
+        const values = showData.map((item) => item.value)
+        const dataoption = {
+          yAxis: {
+            data: names
+          },
+          series: [
+            {
+              data: values
+            }
+          ]
+        }
+        this.echartsInstance.setOption(dataoption)
       }
-      this.echartsInstance.setOption(dataoption)
     },
     // 动态刷新功能
     startInterval () {
@@ -184,6 +191,15 @@ export default {
       }
       this.echartsInstance.setOption(adapterOption)
       this.echartsInstance.resize()
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true, // 一旦监听到路由的变化立即执行
+      handler (to, from) {
+        this.getData()
+        // this.updateChart()
+      }
     }
   }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="com-container">
-    <div class="title" :style="comStyle">
+    <div class="titleTrend" :style="comStyle">
       <span >{{showTitle}}</span>
       <span class="iconfont icon-arrow-down" @click="showChoice=!showChoice" :style="comStyle"></span>
       <div class="select-con" v-show="showChoice">
@@ -10,6 +10,7 @@
       </div>
     </div>
     <div class="com-chart" ref="trend_ref"></div>
+    <span class="iconfont icon-expand-alt" @click="handleFullscreen"></span>
   </div>
 </template>
 
@@ -78,9 +79,12 @@ export default {
       this.echartsInstance.setOption(initOption)
     },
     // 获取服务器数据
-    getData (res) {
-      // const { data: res } = await this.$http.get('trend')
+    async  getData (res) {
       this.allData = res
+      if (!res) {
+        const { data: ret } = await this.$http.get('trend')
+        this.allData = ret
+      }
       this.updatedChart()
     },
     // 更新图表
@@ -147,7 +151,7 @@ export default {
           itemHeight: this.titleFontSize,
           itemGap: this.titleFontSize,
           textStyle: {
-            fontSize: this.titleFontSize / 2
+            fontSize: this.titleFontSize / 3 * 2
           }
         }
       }
@@ -159,6 +163,19 @@ export default {
       // 图表并不是响应式的，需要手动更新
       this.showChoice = false
       this.updatedChart()
+    },
+    handleFullscreen () {
+      this.getData()
+      this.$router.push('/trendpage')
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true, // 一旦监听到路由的变化立即执行
+      handler (to, from) {
+        this.getData()
+        // this.updateChart()
+      }
     }
   },
   computed: {
@@ -188,7 +205,10 @@ export default {
 </script>
 
 <style lang='less' scoped>
-   .title{
+    .com-container{
+      position:relative
+    }
+   .titleTrend{
      position: absolute;
      left:20px;
      top:20px;

@@ -1,7 +1,7 @@
 <template>
   <div class="com-container" @dblclick="revertMap">
-    <div class="com-chart" ref="map_ref">
-    </div>
+    <div class="com-chart" ref="map_ref"></div>
+    <span class="iconfont icon-expand-alt" @click="$router.push('/mappage')"></span>
   </div>
 </template>
 
@@ -79,10 +79,14 @@ export default {
       })
     },
     // 获取服务器数据
-    getData (res) {
+    async getData (res) {
       // const { data: res } = await this.$http.get('map')
       this.allData = res
       // console.log(this.allData)
+      if (!res) {
+        const { data: ret } = await this.$http.get('map')
+        this.allData = ret
+      }
       this.updatedChart()
     },
     // 更新图表
@@ -139,6 +143,15 @@ export default {
         }
       }
       this.echartsInstance.setOption(revertOption)
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true, // 一旦监听到路由的变化立即执行
+      handler (to, from) {
+        this.getData()
+        // this.updateChart()
+      }
     }
   }
 }

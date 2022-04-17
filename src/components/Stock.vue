@@ -1,6 +1,7 @@
 <template>
   <div class="com-container">
     <div class="com-chart" ref="stock_ref"></div>
+     <span class="iconfont icon-expand-alt" @click="$router.push('/stockpage')"></span>
   </div>
 </template>
 
@@ -55,9 +56,13 @@ export default {
         this.startInterval()
       })
     },
-    getData (res) {
+    async getData (res) {
       // const { data: res } = await this.$http.get('stock')
       this.allData = res
+      if (!res) {
+        const { data: ret } = await this.$http.get('stock')
+        this.allData = ret
+      }
       // console.log(res)
       this.startInterval()
       this.updateChart()
@@ -185,6 +190,15 @@ export default {
         }
         this.updateChart()
       }, 5000)
+    }
+  },
+  watch: {
+    $route: {
+      immediate: true, // 一旦监听到路由的变化立即执行
+      handler (to, from) {
+        this.getData()
+        // this.updateChart()
+      }
     }
   }
 
