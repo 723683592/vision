@@ -13,6 +13,9 @@ export default class SocketService {
   //  实例属性
   ws = null
   callBackMapping = {}
+  connected = false
+  sendRetryCount = 0
+  connectRetryCount=0
   // 初始化连接websocket
   connect () {
     if (!window.WebSocket) {
@@ -21,16 +24,20 @@ export default class SocketService {
     this.ws = new WebSocket('ws://localhost:9998')
     this.ws.onopen = () => {
       console.log('WebSocket 连接成功')
+      this.connected = true
     }
     this.ws.onclose = e => {
       console.log('服务器关闭了连接')
-    }
-    this.ws.onmessage = msg => {
-      console.log('WebSocket 接收到数据')
+      this.connected = false
+      this.connectRetryCount++
+      setTimeout(() => {
+        // 断开重连机制
+        this.connect()
+      }, 500 * this.connectRetryCount)
     }
     // 得到服务端发送过来的数据
     this.ws.onmessage = (msg) => {
-      console.log('从服务端发送过来的数据')
+      console.log('WebSocket 接收到数据')
       const recvData = JSON.parse(msg.data)
       const socketType = recvData.socketType
       // 判断回调函数是否存在
@@ -38,7 +45,7 @@ export default class SocketService {
         const action = recvData.action
         if (action === 'getData') {
           const realData = JSON.parse(recvData.data)
-          // 分开来看this.callBackMapping[socketType] 是一个回调函数   call改变this指向
+          // 分开来看this.callBackMapping[socketType] 是一个函数   call改变this指向
           this.callBackMapping[socketType].call(this, realData)
         }
       }
@@ -56,7 +63,15 @@ export default class SocketService {
   }
 
   send (data) {
-    console.log('发送数据给服务器:')
-    this.ws.send(JSON.stringify(data))
+    // console.log('发送数据给服务器:')
+    if (this.connected) {
+      this.sendRetryCount = 0
+      this.ws.send(JSON.stringify(data))
+    } else {
+      setTimeout(() => {
+        this.sendRetryCount++
+        this.send(data)
+      }, 200 * this.sendRetryCount) // 发送数据尝试的次数越大, 则下一次连接的 延迟也就越长 } }
+    }
   }
 }

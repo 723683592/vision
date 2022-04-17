@@ -16,9 +16,20 @@ export default {
       timer: null
     }
   },
+  created () {
+    // 在组件创建完成后进行组件的注册
+    this.$socket.registerCallBack('rankData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'rankData',
+      chartName: 'rank',
+      value: ''
+    })
+
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完主动进行屏幕的适配
     this.screenAdapter()
@@ -26,6 +37,7 @@ export default {
   destroyed () {
     clearInterval(this.timer)
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('rankData')
   },
   methods: {
     initChart () {
@@ -59,8 +71,8 @@ export default {
         this.startInterval()
       })
     },
-    async getData () {
-      const { data: res } = await this.$http.get('rank')
+    getData (res) {
+      // const { data: res } = await this.$http.get('rank')
       this.allData = res
       // 拿到数据之后降序排列
       this.allData.sort((a, b) => b.value - a.value)

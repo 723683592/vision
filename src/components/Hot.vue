@@ -18,9 +18,19 @@ export default {
       titleFontSize: 0
     }
   },
+  created () {
+    // 在组件创建完成后进行组件的注册
+    this.$socket.registerCallBack('hotData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'hotData',
+      chartName: 'hot',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完主动进行屏幕的适配
     this.screenAdapter()
@@ -33,6 +43,8 @@ export default {
     comStyle () { return { fontSize: this.titleFontSize + 'px' } }
   },
   destroyed () {
+    window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('hotData')
   },
   methods: {
     initChart () {
@@ -53,9 +65,9 @@ export default {
       this.echartsInstance.setOption(initOption)
     },
     // 获取数据
-    async getData () {
+    getData (res) {
       // 从后台拿数据，解构赋值
-      const { data: res } = await this.$http.get('hot')
+      // const { data: res } = await this.$http.get('hot')
       this.allData = res
       this.updateChart()
     },

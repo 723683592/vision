@@ -17,15 +17,26 @@ export default {
       mapdata: {}
     }
   },
+  created () {
+    // 在组件创建完成后进行组件的注册
+    this.$socket.registerCallBack('mapData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'mapData',
+      chartName: 'map',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完主动进行屏幕的适配
     this.screenAdapter()
   },
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('mapData')
   },
   methods: {
     async initChart () {
@@ -68,10 +79,10 @@ export default {
       })
     },
     // 获取服务器数据
-    async getData () {
-      const { data: res } = await this.$http.get('map')
+    getData (res) {
+      // const { data: res } = await this.$http.get('map')
       this.allData = res
-      console.log(this.allData)
+      // console.log(this.allData)
       this.updatedChart()
     },
     // 更新图表

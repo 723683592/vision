@@ -18,7 +18,14 @@ export default {
     }
   },
   created () {
-    this.getData()
+    this.$socket.registerCallBack('sellerData', this.getData)
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'sellerData',
+      chartName: 'seller',
+      value: ''
+    })
   },
   mounted () {
     this.initChart()
@@ -30,6 +37,7 @@ export default {
   destroyed () {
     clearInterval()
     window.removeEventListener('resize', this.screenAdapter)
+    this.$socket.unRegisterCallBack('sellerData')
   },
   methods: {
     // 初始化echart实例对象
@@ -104,12 +112,12 @@ export default {
       })
     },
     // 获取服务器数据
-    async getData () {
-      const { data: res } = await this.$http.get('seller')
+    getData (res) {
+      // const { data: res } = await this.$http.get('seller')
       this.allData = res
       // 对数据进行排序 小-大
       this.allData.sort((a, b) => a.value - b.value)
-      console.log(this.allData)
+      // console.log(this.allData)
       // 计算总页码
       this.totalPage = Math.ceil(this.allData.length / 5)
       // 更新数据

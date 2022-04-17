@@ -15,9 +15,19 @@ export default {
       timer: null
     }
   },
+  created () {
+    // 在组件创建完成后进行组件的注册
+    this.$socket.registerCallBack('stockData', this.getData)
+  },
   mounted () {
     this.initChart()
-    this.getData()
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'stockData',
+      chartName: 'stock',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完主动进行屏幕的适配
     this.screenAdapter()
@@ -25,6 +35,7 @@ export default {
   destroyed () {
     window.removeEventListener('resize', this.screenAdapter)
     clearInterval(this.timer)
+    this.$socket.unRegisterCallBack('stockData')
   },
   methods: {
     initChart () {
@@ -44,10 +55,10 @@ export default {
         this.startInterval()
       })
     },
-    async getData () {
-      const { data: res } = await this.$http.get('stock')
+    getData (res) {
+      // const { data: res } = await this.$http.get('stock')
       this.allData = res
-      console.log(res)
+      // console.log(res)
       this.startInterval()
       this.updateChart()
     },
