@@ -1,5 +1,6 @@
 # vision
-
+这是一个电商后台可视化项目。
+里面包含了六个图表组件，用来展示数据情况。
 ## Project setup
 ```
 npm install
