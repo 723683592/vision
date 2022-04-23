@@ -25,13 +25,13 @@ export default {
   },
   mounted () {
     this.initChart()
-    // this.getData()
-    this.$socket.send({
-      action: 'getData',
-      socketType: 'hotData',
-      chartName: 'hot',
-      value: ''
-    })
+    this.getData()
+    // this.$socket.send({
+    //   action: 'getData',
+    //   socketType: 'hotData',
+    //   chartName: 'hot',
+    //   value: ''
+    // })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完主动进行屏幕的适配
     this.screenAdapter()
@@ -140,16 +140,16 @@ export default {
       this.updateChart()
     }
 
-  },
-  watch: {
-    $route: {
-      immediate: true, // 一旦监听到路由的变化立即执行
-      handler (to, from) {
-        this.getData()
-        // this.updateChart()
-      }
-    }
   }
+  // watch: {
+  //   $route: {
+  //     immediate: true, // 一旦监听到路由的变化立即执行
+  //     handler (to, from) {
+  //       this.getData()
+  //       // this.updateChart()
+  //     }
+  //   }
+  // }
 }
 </script>
 
