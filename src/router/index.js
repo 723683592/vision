@@ -7,7 +7,6 @@ import RankPage from '../views/rankPage.vue'
 import HotPage from '../views/hotPage.vue'
 import StockPage from '../views/stockPage.vue'
 import allPage from '../views/allPage.vue'
-import test from '@/test.vue'
 Vue.use(VueRouter)
 
 const routes = [{
@@ -33,10 +32,6 @@ const routes = [{
 {
   path: '/stockpage',
   component: StockPage
-},
-{
-  path: '/test',
-  component: test
 },
 {
   path: '/',
