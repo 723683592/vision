@@ -71,8 +71,8 @@ canvas{
     height:93%;
     background-color:#161522;
     .right,.left,.center{
-      display: flex;
-      flex-direction:column;
+      // display: flex;
+      // flex-direction:column;
       float:left;
       width: 29%;
       height: 100%;
@@ -83,14 +83,20 @@ canvas{
         .leftTop{
           height:60%;
         }
-          .centerTop{
+        .centerTop{
           height:70%;
         }
          .rightTop{
           height:54%;
         }
-          .leftBottom,.centerBottom,.rightBottom{
-          flex:1;
+         .leftBottom{
+          height:40%;
+         }
+        .centerBottom{
+          height:30%;
+        }
+        .rightBottom{
+          height:46%;
         }
     }
     .center{
@@ -99,10 +105,19 @@ canvas{
   }
 }
 // expand
-.icon-expand-alt{
+.icon-expand-alt,.icon-compress-alt{
   position:absolute;
   color:white;
   top:8%;
   right:8%;
+}
+//fullpage
+.fullpage{
+  left:0;
+  top:7%;
+  position:absolute;
+  height: 90%;
+  width: 100%;
+  z-index:1000;
 }
 

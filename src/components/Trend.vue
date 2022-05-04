@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="com-chart" ref="trend_ref"></div>
-    <span class="iconfont icon-expand-alt" @click="handleFullscreen"></span>
+    <span :class=expandClass @click="expand"></span>
   </div>
 </template>
 
@@ -23,7 +23,8 @@ export default {
       allData: null,
       showChoice: false,
       choiceType: 'map',
-      titleFontSize: 0
+      titleFontSize: 0,
+      expandClass: 'iconfont icon-expand-alt'
     }
   },
   created () {
@@ -164,18 +165,18 @@ export default {
       this.showChoice = false
       this.updatedChart()
     },
-    handleFullscreen () {
-      this.getData()
-      this.$router.push('/trendpage')
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true, // 一旦监听到路由的变化立即执行
-      handler (to, from) {
-        this.getData()
-        // this.updateChart()
+    // 全屏缩放处理
+    expand () {
+      // 切换回来
+      if (this.expandClass === 'iconfont icon-compress-alt') {
+        this.expandClass = 'iconfont icon-expand-alt'
+        this.$emit('fullpage', ['leftTop', 'leftTop'])
+      } else {
+        // 局部页面变成全屏
+        this.$emit('fullpage', ['leftTop', 'fullpage'])
+        this.expandClass = 'iconfont icon-compress-alt'
       }
+      setTimeout(this.screenAdapter, 50)
     }
   },
   computed: {

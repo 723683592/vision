@@ -1,7 +1,7 @@
 <template>
   <div class="com-container">
     <div class="com-chart" ref="stock_ref"></div>
-     <span class="iconfont icon-expand-alt" @click="$router.push('/stockpage')"></span>
+     <span :class=expandClass @click="expand"></span>
   </div>
 </template>
 
@@ -13,7 +13,8 @@ export default {
       echartsInstance: null,
       allData: null,
       currentIndex: 0,
-      timer: null
+      timer: null,
+      expandClass: 'iconfont icon-expand-alt'
     }
   },
   created () {
@@ -190,18 +191,20 @@ export default {
         }
         this.updateChart()
       }, 5000)
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true, // 一旦监听到路由的变化立即执行
-      handler (to, from) {
-        this.getData()
-        // this.updateChart()
+    },
+    expand () {
+      // 切换回来
+      if (this.expandClass === 'iconfont icon-compress-alt') {
+        this.expandClass = 'iconfont icon-expand-alt'
+        this.$emit('fullpage', ['rightBottom', 'rightBottom'])
+      } else {
+        // 局部页面变成全屏
+        this.$emit('fullpage', ['rightBottom', 'fullpage'])
+        this.expandClass = 'iconfont icon-compress-alt'
       }
+      setTimeout(this.screenAdapter, 50)
     }
   }
-
 }
 </script>
 

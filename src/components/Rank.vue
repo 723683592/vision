@@ -1,7 +1,7 @@
 <template>
   <div class="com-container">
     <div class="com-chart" ref="rank_ref"></div>
-    <span class="iconfont icon-expand-alt" @click="$router.push('/rankpage')"></span>
+    <span :class=expandClass @click="expand"></span>
   </div>
 </template>
 
@@ -14,7 +14,8 @@ export default {
       allData: null,
       startValue: 0,
       endValue: 9,
-      timer: null
+      timer: null,
+      expandClass: 'iconfont icon-expand-alt'
     }
   },
   created () {
@@ -147,15 +148,18 @@ export default {
         }
         this.updateChart()
       }, 3000)
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true, // 一旦监听到路由的变化立即执行
-      handler (to, from) {
-        this.getData()
-        // this.updateChart()
+    },
+    expand () {
+      // 切换回来
+      if (this.expandClass === 'iconfont icon-compress-alt') {
+        this.expandClass = 'iconfont icon-expand-alt'
+        this.$emit('fullpage', ['centerBottom', 'centerBottom'])
+      } else {
+        // 局部页面变成全屏
+        this.$emit('fullpage', ['centerBottom', 'fullpage'])
+        this.expandClass = 'iconfont icon-compress-alt'
       }
+      setTimeout(this.screenAdapter, 50)
     }
   }
 }

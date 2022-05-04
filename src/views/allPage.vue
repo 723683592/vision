@@ -17,27 +17,27 @@
     </div>
       <div class="boxs">
      <div class="left">
-       <div class="leftTop">
-         <Trend></Trend>
+       <div :class=classArr.leftTop>
+         <Trend @fullpage="fullpage"></Trend>
        </div>
-       <div class="leftBottom">
-         <Seller></Seller>
+       <div :class=classArr.leftBottom>
+         <Seller @fullpage="fullpage"></Seller>
        </div>
      </div>
      <div class="center">
-        <div class="centerTop">
-           <Map></Map>
+        <div :class=classArr.centerTop>
+           <Map @fullpage="fullpage"></Map>
         </div>
-       <div class="centerBottom">
-         <Rank></Rank>
+       <div :class=classArr.centerBottom>
+         <Rank @fullpage="fullpage"></Rank>
        </div>
      </div>
      <div class="right">
-       <div class="rightTop">
-            <Hot></Hot>
+       <div :class=classArr.rightTop>
+            <Hot @fullpage="fullpage"></Hot>
        </div>
-       <div class="rightBottom">
-               <Stock></Stock>
+       <div :class=classArr.rightBottom>
+            <Stock @fullpage="fullpage"></Stock>
        </div>
      </div>
 
@@ -56,7 +56,16 @@ export default {
   data: function () {
     return {
       time: new Date().toString().slice(0, 25),
-      timer: null
+      timer: null,
+      full: null,
+      classArr: {
+        leftTop: 'leftTop',
+        leftBottom: 'leftBottom',
+        centerTop: 'centerTop',
+        centerBottom: 'centerBottom',
+        rightTop: 'rightTop',
+        rightBottom: 'rightBottom'
+      }
     }
   },
   components: {
@@ -78,6 +87,9 @@ export default {
       this.timer = setInterval(() => {
         this.time = new Date().toString().slice(0, 25)
       }, 1000)
+    },
+    fullpage (val) {
+      this.classArr[val[0]] = val[1]
     }
   }
 }

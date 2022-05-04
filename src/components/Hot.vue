@@ -3,7 +3,7 @@
     <div class="com-chart" ref="hot_ref"></div>
     <span class="iconfont icon-arrow-down"  @click='toLeft' :style="comStyle"></span>
     <span class="iconfont icon-arrow-up"  @click='toRight' :style="comStyle"></span>
-    <span class="iconfont icon-expand-alt" @click="$router.push('/hotpage')"></span>
+    <span :class=expandClass @click="expand"></span>
     <span class="cat_name" >{{catTitle}}</span>
   </div>
 </template>
@@ -16,7 +16,8 @@ export default {
       echartsInstance: null,
       allData: null,
       currentIndex: 0,
-      titleFontSize: 0
+      titleFontSize: 0,
+      expandClass: 'iconfont icon-expand-alt'
     }
   },
   created () {
@@ -25,13 +26,13 @@ export default {
   },
   mounted () {
     this.initChart()
-    this.getData()
-    // this.$socket.send({
-    //   action: 'getData',
-    //   socketType: 'hotData',
-    //   chartName: 'hot',
-    //   value: ''
-    // })
+    // this.getData()
+    this.$socket.send({
+      action: 'getData',
+      socketType: 'hotData',
+      chartName: 'hot',
+      value: ''
+    })
     window.addEventListener('resize', this.screenAdapter)
     // 在页面加载完主动进行屏幕的适配
     this.screenAdapter()
@@ -104,7 +105,7 @@ export default {
       const adapterOption = {
         title: {
           textStyle: {
-            fontSize: this.titleFontSize
+            fontSize: this.titleFontSize / 3 * 2
           }
         },
         series: {
@@ -138,18 +139,23 @@ export default {
         this.currentIndex = 0
       }
       this.updateChart()
+    },
+    // 全屏缩放处理
+    expand () {
+      // 切换回来
+      if (this.expandClass === 'iconfont icon-compress-alt') {
+        this.expandClass = 'iconfont icon-expand-alt'
+        this.$emit('fullpage', ['rightTop', 'rightTop'])
+      } else {
+        // 局部页面变成全屏
+        this.$emit('fullpage', ['rightTop', 'fullpage'])
+        this.expandClass = 'iconfont icon-compress-alt'
+      }
+      setTimeout(this.screenAdapter, 50)
     }
 
   }
-  // watch: {
-  //   $route: {
-  //     immediate: true, // 一旦监听到路由的变化立即执行
-  //     handler (to, from) {
-  //       this.getData()
-  //       // this.updateChart()
-  //     }
-  //   }
-  // }
+
 }
 </script>
 

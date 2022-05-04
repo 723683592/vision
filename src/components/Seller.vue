@@ -2,7 +2,7 @@
 <template>
  <div class="com-container">
      <div class="com-chart" ref="seller_ref"></div>
-      <span class="iconfont icon-expand-alt" @click="$router.push('/sellerpage')"></span>
+      <span :class=expandClass @click="expand"></span>
  </div>
 </template>
 
@@ -15,7 +15,8 @@ export default {
       allData: [],
       currentPage: 1,
       totalPage: 0,
-      timerId: null
+      timerId: null,
+      expandClass: 'iconfont icon-expand-alt'
     }
   },
   created () {
@@ -191,15 +192,18 @@ export default {
       }
       this.echartsInstance.setOption(adapterOption)
       this.echartsInstance.resize()
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true, // 一旦监听到路由的变化立即执行
-      handler (to, from) {
-        this.getData()
-        // this.updateChart()
+    },
+    expand () {
+      // 切换回来
+      if (this.expandClass === 'iconfont icon-compress-alt') {
+        this.expandClass = 'iconfont icon-expand-alt'
+        this.$emit('fullpage', ['leftBottom', 'leftBottom'])
+      } else {
+        // 局部页面变成全屏
+        this.$emit('fullpage', ['leftBottom', 'fullpage'])
+        this.expandClass = 'iconfont icon-compress-alt'
       }
+      setTimeout(this.screenAdapter, 50)
     }
   }
 }

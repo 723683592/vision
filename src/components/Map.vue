@@ -1,7 +1,7 @@
 <template>
-  <div class="com-container" @dblclick="revertMap">
+  <div class="com-container" @dblclick="revertMap" ref="map" >
     <div class="com-chart" ref="map_ref"></div>
-    <span class="iconfont icon-expand-alt" @click="$router.push('/mappage')"></span>
+    <span :class=expandClass @click="expand" ></span>
   </div>
 </template>
 
@@ -14,7 +14,8 @@ export default {
     return {
       echartsInstance: null,
       allData: null,
-      mapdata: {}
+      mapdata: {},
+      expandClass: 'iconfont icon-expand-alt'
     }
   },
   created () {
@@ -143,15 +144,19 @@ export default {
         }
       }
       this.echartsInstance.setOption(revertOption)
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true, // 一旦监听到路由的变化立即执行
-      handler (to, from) {
-        this.getData()
-        // this.updateChart()
+    },
+    // 全屏缩放处理
+    expand () {
+      // 切换回来
+      if (this.expandClass === 'iconfont icon-compress-alt') {
+        this.expandClass = 'iconfont icon-expand-alt'
+        this.$emit('fullpage', ['centerTop', 'centerTop'])
+      } else {
+        // 局部页面变成全屏
+        this.$emit('fullpage', ['centerTop', 'fullpage'])
+        this.expandClass = 'iconfont icon-compress-alt'
       }
+      setTimeout(this.screenAdapter, 50)
     }
   }
 }
